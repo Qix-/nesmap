@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Savant-TLK Map Editor</title>
+		<style type="text/css">
+			#screen {
+				width: 768px;
+				height: 750px; /* It's really 720px but the scrollbar adds some. */
+				border: 2px solid #000;
+				background: #555;
+				overflow-x: scroll;
+				overflow-y: hidden;
+			}
+
+			#screen .pixel {
+				display: inline-block;
+				width: 3px;
+				height: 3px;
+			}
+
+			/* palette */
+			{{PALETTE}}
+		</style>
+	</head>
+	<body>
+		<div id="screen">
+		</div>
+	</body>
+</html>
