@@ -6,5 +6,11 @@ window.STLKEditor = function(canvas, bottom, side) {
 	};
 
 	// get initial sprite data
-	editor.renderer.reloadSprites();
+	editor.renderer.reloadSprites(function (err) {
+		if (err) {
+			return alert('Could not load spritesheet: ' + err + '\n\nDid you build?');
+		}
+
+		editor.renderer.invalidate();
+	});
 };
