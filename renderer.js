@@ -147,6 +147,11 @@
 		getPixelColor: function (px, py, spriteIndex, attributeBits, palette, side) {
 			var spriteBytes = this.getSpriteBytes(spriteIndex, side);
 			var spriteBits = this.getSpriteBits(px, py, spriteBytes);
+			if (spriteBits === 0) {
+				// Going to end up being transparent anyway.
+				// Don't draw a pixel.
+				return null;
+			}
 			var color = (attributeBits << 2) | spriteBits;
 			var colorIndex = palette[color];
 			return STLKPalette[colorIndex];
