@@ -89,17 +89,17 @@
 			for (var y = 0; y < I.height; y++) {
 				for (var x = 0; x < I.width; x++) {
 					var i = (y * I.width + x) * 4;
-					I.data[i] = pixel[i];
-					I.data[i + 1] = pixel[i + 1];
-					I.data[i + 2] = pixel[i + 2];
+					I.data[i] = pixel[0];
+					I.data[i + 1] = pixel[0];
+					I.data[i + 2] = pixel[0];
 					I.data[i + 3] = 255;
 				}
 			}
 		},
 
 		makePixelArray: function(I) {
-			for (var y = 0; y < I.width; y++) {
-				for (var x = 0; x < I.height; x++) {
+			for (var y = 0; y < I.height; y++) {
+				for (var x = 0; x < I.width; x++) {
 					var i = (y * I.width + x) * 4;
 					var name = Math.floor(this.verticalScroll ? y / 240 : x / 256);
 					var pixel = this.getPixel(x, y, name);
