@@ -9,7 +9,7 @@ if (process.argv.length !== 5) {
 }
 
 var paletteRaw = fs.readFileSync(path.resolve(process.argv[2]));
-var rawHTML = fs.readFileSync(path.resolve(process.argv[3]), 'utf8');
+var raw = fs.readFileSync(path.resolve(process.argv[3]), 'utf8');
 
 var palette = {};
 
@@ -24,13 +24,13 @@ for (var k in palette) {
 	if (palette.hasOwnProperty(k)) {
 		var v = palette[k];
 		if (v === 0x0D || (v & 0x0F) >= 0x0E) {
-			palette[k] = 0x1D;
+			palette[k] = 0x1F;
 		}
 	}
 }
 
 var pattern = /^([\t\s]*)\{\{PALETTE\}\}[\s\t]*$/m;
-var match = rawHTML.match(pattern);
+var match = raw.match(pattern);
 if (!match) {
 	throw new Error('palette tag not found in input file.');
 }
@@ -38,10 +38,11 @@ if (!match) {
 var paletteString = '';
 for (var rgb in palette) {
 	if (palette.hasOwnProperty(rgb)) {
-		paletteString += (match[1] || '') + '#canvas .index-' + palette[rgb] + ' { background: rgb(' + rgb + '); }\n';
+		paletteString += (match[1] || '') + palette[rgb] + ': [ ' + rgb + ' ],\n';
 	}
 }
 
-var newHTML = "<!-- AUTO GENERATED HTML - DO NOT EDIT! -->\n" + rawHTML.replace(pattern, paletteString);
+var newCode = '/* AUTO GENERATED JAVASCRIPT - DO NOT EDIT! Modify the original, not this. */\n';
+newCode += raw.replace(pattern, paletteString);
 
-fs.writeFileSync(path.resolve(process.argv[4]), newHTML, 'utf8');
+fs.writeFileSync(path.resolve(process.argv[4]), newCode, 'utf8');

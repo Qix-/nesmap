@@ -17,6 +17,7 @@
 		this.ctx = this.canvas.getContext('2d');
 		this.backgroundPlane = 1; // 0 = left, 1 = right
 		this.verticalScroll = 0;
+		this.backgroundClear = 0; // 0 = black, 1 = blue, 2 = green, 4 = red; don't use anything else.
 		this.zoom = 3;
 		this.palettes = [[], []];
 		this.attributes = [[], []];
@@ -42,42 +43,83 @@
 
 	STLKRenderer.prototype = {
 		invalidate: function () {
-			var pixelArray = this.makePixelArray();
-			// TODO overlay drawing
+			var I = this.makeImageData();
+			this.clearBackground(I);
+			this.makePixelArray(I);
 
-			// Handle zooming
-			var zoomWidth = pixelArray.width * this.zoom;
-			var zoomHeight = pixelArray.height * this.zoom;
+			var zoomWidth = I.width * this.zoom;
+			var zoomHeight = I.height * this.zoom;
 
-			this.canvas.width = pixelArray.width;
-			this.canvas.height = pixelArray.height;
+			this.canvas.width = I.width;
+			this.canvas.height = I.height;
 			this.canvas.style.width = zoomWidth + 'px';
 			this.canvas.style.height = zoomHeight + 'px';
-			this.ctx.putImageData(pixelArray, 0, 0);
+			this.ctx.putImageData(I, 0, 0);
 		},
 
-		makePixelArray: function() {
+		makeImageData: function() {
 			var totalWidth = 256;
 			var totalHeight = 240;
 			totalWidth *= this.verticalScroll ? 1 : this.names.length;
 			totalHeight *= this.verticalScroll ? this.names.length : 1;
 
 			var imageData = this.ctx.createImageData(totalWidth, totalHeight);
-
-			for (var y = 0; y < totalHeight; y++) {
-				for (var x = 0; x < totalWidth; x++) {
-					var i = (y * totalWidth + x) * 4;
-					imageData.data[i] = Math.floor(Math.random() * 256);
-					imageData.data[i + 1] = Math.floor(Math.random() * 256);
-					imageData.data[i + 2] = Math.floor(Math.random() * 256);
-					imageData.data[i + 3] = Math.floor(Math.random() * 256);
-				}
-			}
-
 			return imageData;
 		},
 
-		getPixel: function(x, y) {},
+		clearBackground: function(I) {
+			var pixel;
+			switch (this.backgroundClear & 0x07) {
+			case 0:
+				pixel = STLKPalette[0x1F];
+				break;
+			case 1:
+				pixel = STLKPalette[0x21];
+				break;
+			case 2:
+				pixel = STLKPalette[0x2B];
+				break;
+			case 4:
+				pixel = STLKPalette[0x35];
+				break;
+			default:
+				throw new Error('background clear cannot be ' + this.backgroundClear);
+			}
+
+			for (var y = 0; y < I.height; y++) {
+				for (var x = 0; x < I.width; x++) {
+					var i = (y * I.width + x) * 4;
+					I.data[i] = pixel[i];
+					I.data[i + 1] = pixel[i + 1];
+					I.data[i + 2] = pixel[i + 2];
+					I.data[i + 3] = 255;
+				}
+			}
+		},
+
+		makePixelArray: function(I) {
+			for (var y = 0; y < I.width; y++) {
+				for (var x = 0; x < I.height; x++) {
+					var i = (y * I.width + x) * 4;
+					var name = Math.floor(this.verticalScroll ? y / 240 : x / 256);
+					var pixel = this.getPixel(x, y, name);
+					if (pixel) {
+						I.data[i] = pixel[0];
+						I.data[i + 1] = pixel[1];
+						I.data[i + 2] = pixel[2];
+					}
+				}
+			}
+		},
+
+		getPixel: function(x, y, name) {
+			name = this.names[name];
+
+			var tileX = Math.floor(x / 32);
+			var tileY = Math.floor(x / 30);
+			var px = x % 8;
+			var py = y % 8;
+		},
 
 		reloadSprites: function (cb) {
 			reqwest({
