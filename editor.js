@@ -11,6 +11,10 @@ window.STLKEditor = function(canvas, bottom, side) {
 			return alert('Could not load spritesheet: ' + err + '\n\nDid you build?');
 		}
 
+		// XXX DEBUG
+		for (var i = 0; i < 16; i++) {
+			editor.renderer.palettes[0][i] = i;
+		}
 		editor.renderer.invalidate();
 	});
 };

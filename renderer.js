@@ -19,7 +19,7 @@
 		this.verticalScroll = 0;
 		this.backgroundClear = 0; // 0 = black, 1 = blue, 2 = green, 4 = red; don't use anything else.
 		this.zoom = 3;
-		this.palettes = [[], []];
+		this.palettes = [[], []]; // 0 = background (picture), 1 = foreground (sprites)
 		this.attributes = [[], []];
 		this.names = [[]];
 		this.chrData = [];
@@ -101,8 +101,8 @@
 			for (var y = 0; y < I.height; y++) {
 				for (var x = 0; x < I.width; x++) {
 					var i = (y * I.width + x) * 4;
-					var name = Math.floor(this.verticalScroll ? y / 240 : x / 256);
-					var pixel = this.getPixel(x, y, name);
+					var nameID = Math.floor(this.verticalScroll ? y / 240 : x / 256);
+					var pixel = this.getPixel(x, y, nameID);
 					if (pixel) {
 						I.data[i] = pixel[0];
 						I.data[i + 1] = pixel[1];
@@ -112,16 +112,61 @@
 			}
 		},
 
-		getPixel: function(x, y, name) {
-			name = this.names[name];
-
+		getPixel: function(x, y, nameID) {
 			var tileX = Math.floor(x / 32);
-			var tileY = Math.floor(x / 30);
+			var tileY = Math.floor(y / 30);
+			var attrX = Math.floor(tileX / 4);
+			var attrY = Math.floor(tileY / 4);
+			var attrQX = tileX % 2;
+			var attrQY = tileY % 2;
 			var px = x % 8;
 			var py = y % 8;
+
+			var spriteIndex = this.getSpriteIndex(tileX, tileY, this.names[nameID]);
+			var attribute = this.getAttribute(attrX, attrY, this.attributes[nameID]);
+			var attributeBits = this.getAttributeBits(attrQX, attrQY, attribute);
+
+			return this.getPixelColor(px, py, spriteIndex, attributeBits, this.palettes[0], this.backgroundPlane);
+		},
+
+		getAttributeBits: function (x, y, attribute) {
+			var offset = y * 2 + x;
+			return (attribute >> (offset * 2)) & 0x03;
+		},
+
+		getSpriteIndex: function (tileX, tileY, name) {
+			var offset = tileY * 32 + tileX;
+			return name[offset] & 0xFF;
+		},
+
+		getAttribute: function (attrX, attrY, attributes) {
+			var offset = attrY * 8 + attrX;
+			return attributes[offset] & 0xFF;
+		},
+
+		getPixelColor: function (px, py, spriteIndex, attributeBits, palette, side) {
+			var spriteBytes = this.getSpriteBytes(spriteIndex, side);
+			var spriteBits = this.getSpriteBits(px, py, spriteBytes);
+			var color = (attributeBits << 2) | spriteBits;
+			var colorIndex = palette[color];
+			return STLKPalette[colorIndex];
+		},
+
+		getSpriteBytes: function (spriteIndex, side) {
+			var index = side * 4096 + spriteIndex * 16;
+			return this.chrData.slice(index, index + 16);
+		},
+
+		getSpriteBits: function (x, y, bytes) {
+			var b1 = bytes[y];
+			var b2 = bytes[y + 8];
+			var bit1 = (b1 >> 7 - x) & 1;
+			var bit2 = (b2 >> 7 - x) & 1;
+			return (bit2 << 1) | bit1;
 		},
 
 		reloadSprites: function (cb) {
+			var self = this;
 			reqwest({
 				url: '/editor/chr'
 				, method: 'get'
@@ -132,7 +177,7 @@
 					}
 				}
 				, success: function (resp) {
-					this.chrData = new Uint8Array(base64ToArrayBuffer(resp));
+					self.chrData = new Uint8Array(base64ToArrayBuffer(resp));
 					console.debug('successfully reloaded CHR data from server');
 
 					if (cb) {
