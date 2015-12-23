@@ -50,11 +50,15 @@
 			{{PALETTE}}
 		</style>
 		<script src="/reqwest.min.js"></script>
+		<script src="/renderer.js"></script>
 		<script src="/editor.js"></script>
 	</head>
 	<body>
 		<div id="canvas"></div>
 		<div id="sidebar"></div>
 		<div id="bottombar"></div>
+		<script>
+			STLKEditor('#canvas', '#bottombar', '#sidebar');
+		</script>
 	</body>
 </html>
