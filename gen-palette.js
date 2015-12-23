@@ -38,7 +38,7 @@ if (!match) {
 var paletteString = '';
 for (var rgb in palette) {
 	if (palette.hasOwnProperty(rgb)) {
-		paletteString += (match[1] || '') + '.index-' + palette[rgb] + ' { background: rgb(' + rgb + '); }\n';
+		paletteString += (match[1] || '') + '#canvas .index-' + palette[rgb] + ' { background: rgb(' + rgb + '); }\n';
 	}
 }
 

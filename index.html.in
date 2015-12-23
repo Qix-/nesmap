@@ -3,27 +3,58 @@
 	<head>
 		<title>Savant-TLK Map Editor</title>
 		<style type="text/css">
-			#screen {
-				width: 768px;
-				height: 750px; /* It's really 720px but the scrollbar adds some. */
+			html, body {
+				padding: 0;
+				margin: 0;
+			}
+
+			#canvas {
+				width: calc(100% - 304px);
+				height: calc(100% - 204px);
+				position: fixed;
+				top: 0px;
+				left: 0px;
 				border: 2px solid #000;
 				background: #555;
 				overflow-x: scroll;
-				overflow-y: hidden;
+				overflow-y: auto;
 			}
 
-			#screen .pixel {
+			#canvas .pixel {
 				display: inline-block;
 				width: 3px;
 				height: 3px;
 			}
 
+			#sidebar {
+				width: 300px;
+				height: 100%;
+				position: fixed;
+				right: 0px;
+				top: 0px;
+				z-index: 1000;
+				background: #999;
+			}
+
+			#bottombar {
+				width: 100%;
+				height: 200px;
+				position: fixed;
+				bottom: 0px;
+				left: 0px;
+				z-index: 500;
+				background: #999;
+			}
+
 			/* palette */
 			{{PALETTE}}
 		</style>
+		<script src="/reqwest.min.js"></script>
+		<script src="/editor.js"></script>
 	</head>
 	<body>
-		<div id="screen">
-		</div>
+		<div id="canvas"></div>
+		<div id="sidebar"></div>
+		<div id="bottombar"></div>
 	</body>
 </html>
