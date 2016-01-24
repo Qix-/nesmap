@@ -1,3 +1,13 @@
 {
-  "main": "index.js"
+  "name": "nesmap",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "map-editor": "electron ."
+  },
+  "dependencies": {
+    "coffee-script": "^1.10.0",
+    "electron-prebuilt": "^0.36.5",
+    "express": "^4.13.4"
+  }
 }
