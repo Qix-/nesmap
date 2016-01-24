@@ -9,6 +9,10 @@ html, body {
 	padding: 0;
 }
 
+canvas {
+	image-rendering: pixelated;
+}
+
 canvas-container {
 	width: 100%;
 	height: calc(100% - 25px);
