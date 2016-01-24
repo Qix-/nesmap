@@ -4,7 +4,7 @@
 window.Renderer =
 class Renderer extends EventEmitter
 	constructor: (@canvas) ->
-		@zoom = 6
+		@zoom = 2
 		@ctx = @canvas.getContext '2d'
 
 		ipcRenderer.once 'id', (e, nid) =>
@@ -42,6 +42,8 @@ class Renderer extends EventEmitter
 
 		@canvas.style.width = "#{@canvas.width = width}px"
 		@canvas.style.height = "#{@canvas.height = height}px"
+
+	setZoom: (@zoom) -> @redraw()
 
 	getMirroring: -> @mirrors?[@nesmap?.nametableMirroring]
 	getNametableLayout: ->
