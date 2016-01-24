@@ -94,6 +94,17 @@ class Renderer extends EventEmitter
 		# attribute clusters
 		@drawGrid '#933', [2, 1], [8, 8], 32, pageUnits, pageLayout
 
+		# page guides
+		@ctx.beginPath()
+		@ctx.moveTo @zoom * 32 * 8 + 0.5, 0
+		@ctx.lineTo @zoom * 32 * 8 + 0.5, @canvas.height
+		@ctx.moveTo 0.5, @zoom * 30 * 8 + 0.5
+		@ctx.lineTo @canvas.width, @zoom * 30 * 8 + 0.5
+		@ctx.strokeStyle = '#069'
+		@ctx.lineWidth = 1
+		@ctx.setLineDash []
+		@ctx.stroke()
+
 		# NTSC guide
 		@ctx.beginPath()
 		@ctx.moveTo 0, @zoom * 16 + 0.5
