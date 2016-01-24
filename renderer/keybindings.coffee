@@ -8,7 +8,6 @@ window.Keys =
 	attach: ->
 		window.addEventListener 'keydown', (e) =>
 			code = @generateCode e
-			console.debug 'key', code
 			@emitter.emit code
 
 	getKey: (code) -> (String.fromCharCode parseInt (code.substring 2), 16).toLowerCase() if code.substring(0, 2) is 'U+'
