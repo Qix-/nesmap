@@ -12,6 +12,7 @@
 	<body>
 		<canvas-container>
 			<canvas id="map"></canvas>
+			<canvas id="cursor"></canvas>
 		</canvas-container>
 		<zoom-slider>
 			<input id="zoom" type="range" min="1" max="10" step="0.1" />
@@ -46,7 +47,7 @@
 		<script type="text/coffeescript">
 			Keys.attach()
 
-			window.renderer = new Renderer document.querySelector 'canvas#map'
+			window.renderer = new Renderer (document.querySelector 'canvas#map'), (cursor = document.querySelector 'canvas#cursor')
 
 			zoomer = document.getElementById 'zoom'
 			zoomer.value = renderer.zoom
@@ -80,6 +81,12 @@
 				mirrorSelector.selectedIndex = nesmap.nametableMirroring
 				for sel, i in chrPageSelectors
 					sel.value = nesmap.chrSwapping[i]
+
+			cursor.addEventListener 'mousemove', (e) ->
+				renderer.mouseOverTile e.offsetX, e.offsetY, (if e.altKey then 'page' else if e.shiftKey then 'attribute' else 'tile')
+
+			cursor.addEventListener 'mouseout', (e) ->
+				renderer.clearCursor()
 		</script>
 	</body>
 </html>

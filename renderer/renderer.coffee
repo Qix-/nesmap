@@ -3,9 +3,10 @@
 
 window.Renderer =
 class Renderer extends EventEmitter
-	constructor: (@canvas) ->
+	constructor: (@canvas, @cursor) ->
 		@zoom = 2
 		@ctx = @canvas.getContext '2d'
+		@ctxCursor = @cursor.getContext '2d'
 
 		ipcRenderer.once 'id', (e, nid) =>
 			@id = nid
@@ -28,6 +29,7 @@ class Renderer extends EventEmitter
 		ipcRenderer.send.apply ipcRenderer, ["#{name}--#{@id}"].concat args
 
 	setNametableMirroring: (mirroring) -> @send 'mirroring', mirroring
+
 	setChrPages: (values) -> @send 'chr-pages', values
 
 	redraw: ->
@@ -51,8 +53,9 @@ class Renderer extends EventEmitter
 		width = pageUnits[0] * @zoom * 32 * 8
 		height = pageUnits[1] * @zoom * 30 * 8
 
-		@canvas.style.width = "#{@canvas.width = width}px"
-		@canvas.style.height = "#{@canvas.height = height}px"
+		@cursor.style.width = @canvas.style.width = "#{@cursor.width = @canvas.width = width}px"
+
+		@cursor.style.height = @canvas.style.height = "#{@cursor.height = @canvas.height = height}px"
 
 	getPageUnits: ->
 		pageLayout = @getNametableLayout()
@@ -129,4 +132,60 @@ class Renderer extends EventEmitter
 			for y in [0...2]
 				i = y * 2 + x
 				if pageLayout[i] is -1
-					@ctx.clearRect x * @zoom * 32 * 8, y * @zoom * 30 * 8, (x + 1) * @zoom * 32 * 8 - 1, (y + 1) * @zoom * 30 * 8 - 1
+					cx = x * @zoom * 32 * 8
+					cy = y * @zoom * 30 * 8
+					cw = (x + 1) * @zoom * 32 * 8 - 1
+					ch = (y + 1) * @zoom * 30 * 8 - 1
+
+
+					@ctx.clearRect cx, cy, cw, ch
+					@ctxCursor.clearRect cx, cy, cw, ch
+
+	clearCursor: ->
+		@ctxCursor.clearRect 0, 0, @cursor.width, @cursor.height
+
+	translateMouseCoords: (x, y) ->
+		x = Math.floor x / @zoom
+		y = Math.floor y / @zoom
+
+		absTileX = Math.floor x / 8
+		absTileY = Math.floor y / 8
+
+		pageX = Math.floor absTileX / 32
+		pageY = Math.floor absTileY / 30
+		page = pageY * 2 + pageX
+
+		tileX = absTileX % 32
+		tileY = absTileY % 30
+		tile = tileY * 32 + tileX
+
+		attributeX = Math.floor tileX / 2
+		attributeY = Math.floor tileY / 2
+		attribute = attributeY * 16 + attributeX
+
+		return {
+			x, y
+			absTileX, absTileY
+			pageX, pageY, page
+			tileX, tileY, tile
+			attributeX, attributeY, attribute
+		}
+
+	mouseOverTile: (x, y, select = 'tile') ->
+		@clearCursor()
+
+		coords = @translateMouseCoords x, y
+
+		@ctxCursor.fillStyle = 'rgba(255, 255, 255, 0.1)'
+
+		switch select
+			when 'tile'
+				@ctxCursor.fillRect coords.absTileX * 8 * @zoom, coords.absTileY * 8 * @zoom, 8 * @zoom, 8 * @zoom
+			when 'attribute'
+				absAttrX = coords.pageX * 16 + coords.attributeX
+				absAttrY = coords.pageY * 15 + coords.attributeY
+				@ctxCursor.fillRect absAttrX * 16 * @zoom, absAttrY * 16 * @zoom, 16 * @zoom, 16 * @zoom
+			when 'page'
+				@ctxCursor.fillRect coords.pageX * 32 * 8 * @zoom, coords.pageY * 30 * 8 * @zoom, 32 * 8 * @zoom, 30 * 8 * @zoom
+
+		@clearMirroredPages()
