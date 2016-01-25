@@ -32,7 +32,7 @@ class MapEditor extends EventEmitter
 		@nametableMirroring = 0
 		@palette = (0 for [0...16])
 		@attributes = ((0 for [0...64]) for [0...4])
-		@chrSwapping = (null for [0...4])
+		@chrSwapping = (0 for [0...4])
 		@renderer?.redraw()
 
 	loadNesmap: (data) ->

@@ -14,7 +14,7 @@ canvas {
 }
 
 canvas-container {
-	width: 100%;
+	width: calc(100% - 300px);
 	height: calc(100% - 25px);
 	overflow: auto;
 	position: absolute;
@@ -31,5 +31,57 @@ zoom-slider {
 }
 
 zoom-slider #zoom {
-	width: 100%;
+	width: calc(100% - 300px);
+}
+
+sidebar {
+	width: 300px;
+	height: 100%;
+	background: #1A1A1A;
+	position: absolute;
+	right: 0;
+	top: 0;
+	z-index: 1000;
+	padding: 10px;
+	box-sizing: border-box;
+}
+
+sidebar h2 {
+	display: block;
+	color: #999;
+	font-family: sans-serif;
+	font-size: 12px;
+	border-bottom: 1px solid #444;
+	margin-bottom: 3px;
+}
+
+sidebar map-option {
+	display: block;
+}
+
+sidebar map-option > * {
+	display: inline-block;
+}
+
+sidebar map-option h3 {
+	color: #777;
+	font-size: 11px;
+	font-family: monospace;
+}
+
+sidebar map-option > span {
+	float: right;
+}
+
+sidebar section {
+	margin-bottom: 10px;
+}
+
+sidebar map-option#chr-page-selector input {
+	width: 50px;
+	margin-right: calc(((300px - 20px) / 4) - 53px);
+}
+
+sidebar map-option#chr-page-selector input:last-child {
+	margin-right: 0;
 }

@@ -16,13 +16,41 @@
 		<zoom-slider>
 			<input id="zoom" type="range" min="1" max="10" step="0.1" />
 		</zoom-slider>
+		<sidebar>
+			<section>
+				<h2>Tile Picker</h2>
+				<tile-picker></tile-picker>
+			</section>
+
+			<section>
+				<h2>Nesmap</h2>
+				<map-option>
+					<h3>Mirroring</h3>
+					<span>
+						<select id="mirroring"></select>
+					</span>
+				</map-option>
+			</section>
+
+			<section>
+				<h2>CHR Pages</h2>
+				<map-option id="chr-page-selector">
+					<input type="number" />
+					<input type="number" />
+					<input type="number" />
+					<input type="number" />
+				</map-option>
+			</section>
+		</sidebar>
 
 		<script type="text/coffeescript">
 			Keys.attach()
+
 			window.renderer = new Renderer document.querySelector 'canvas#map'
+
 			zoomer = document.getElementById 'zoom'
 			zoomer.value = renderer.zoom
-			zoomer.addEventListener 'input', (e)->
+			zoomer.addEventListener 'input', (e) ->
 				renderer.setZoom this.value
 		</script>
 	</body>
