@@ -196,3 +196,5 @@ class Renderer extends EventEmitter
 				console.error 'not implemented yet'
 			when 'attribute'
 				console.error 'not implemented yet'
+
+	setPalette: (palette) -> @send 'palette', palette

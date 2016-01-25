@@ -44,6 +44,10 @@ class MapRenderer extends EventEmitter
 			@editor.chrSwapping = pages
 			@redraw()
 
+		@onIPC 'palette', (e, palette) =>
+			@editor.palette = palette
+			@redraw()
+
 		@window.loadURL "file://#{__dirname}/renderer/index.htm"
 		@focus()
 

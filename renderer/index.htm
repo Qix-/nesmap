@@ -127,6 +127,9 @@
 
 			paletteSelector = new PaletteSelector document.getElementById 'palette-selector'
 
+			paletteSelector.on 'palette', (palette) ->
+				renderer.setPalette palette
+
 			renderer.on 'nesmap', (nesmap) ->
 				mirrorSelector.selectedIndex = nesmap.nametableMirroring
 				for sel, i in chrPageSelectors
