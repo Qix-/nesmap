@@ -32,6 +32,10 @@ class MapRenderer extends EventEmitter
 		@editor.on 'modified', (modified) =>
 			@setIsModified modified
 
+		@onIPC 'save', =>
+			console.log 'saving...'
+			@editor.saveNesmap => console.log "saved to #{@editor.uri}"
+
 		@window.loadURL "file://#{__dirname}/renderer/index.htm"
 		@focus()
 

@@ -16,6 +16,10 @@ class Renderer extends EventEmitter
 			ipcRenderer.on 'chr-map', (e, @chrMap) => @redraw()
 			ipcRenderer.on 'chr-data', (e, @chrData) => @redraw()
 
+			Keys.on 'cmd-s', =>
+				console.debug 'saving'
+				@send 'save'
+
 	send: (name, args...) ->
 		ipcRenderer.send.apply ipcRenderer, ["#{name}--#{@id}"].concat args
 
