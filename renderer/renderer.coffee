@@ -101,9 +101,6 @@ class Renderer extends EventEmitter
 		# attribute groups
 		@drawGrid '#404', [2, 1], [16, 15], 16, pageUnits, pageLayout
 
-		# attribute clusters
-		@drawGrid '#933', [2, 1], [8, 8], 32, pageUnits, pageLayout
-
 		# page guides
 		@ctx.beginPath()
 		@ctx.moveTo @zoom * 32 * 8 + 0.5, 0
