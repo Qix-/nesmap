@@ -51,8 +51,30 @@
 
 			zoomer = document.getElementById 'zoom'
 			zoomer.value = renderer.zoom
+
+			zoomMax = parseInt zoomer.getAttribute 'max'
+			zoomMin = parseInt zoomer.getAttribute 'min'
+
+			val = parseInt zoomer.value
+
 			zoomer.addEventListener 'input', (e) ->
-				renderer.setZoom this.value
+				val = parseInt this.value
+				renderer.setZoom parseInt val
+
+			document.addEventListener 'mousewheel', (e) ->
+				return if not e.ctrlKey
+
+				args = []
+				for k, v of e when k.match /^delta/
+					args.push k, v
+
+				delta = e.deltaY / -50
+				val += delta
+				val = Math.min zoomMax, Math.max zoomMin, val
+				zoomer.value = val
+				renderer.setZoom val
+				e.preventDefault()
+				return false
 
 			mirrorSelector = document.getElementById 'mirroring'
 			renderer.on 'mirrors', (mirrors) ->
