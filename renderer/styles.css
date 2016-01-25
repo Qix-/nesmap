@@ -92,3 +92,19 @@ sidebar map-option#chr-page-selector input {
 sidebar map-option#chr-page-selector input:last-child {
 	margin-right: 0;
 }
+
+swatch {
+	width: 13px;
+	height: 13px;
+	display: inline-block;
+}
+
+swatch:nth-child(4n) {
+	margin-right: 3px;
+}
+
+swatch.transparent {
+	background: transparent;
+	box-sizing: border-box;
+	border: 1px solid #888;
+}

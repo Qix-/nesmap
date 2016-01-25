@@ -5,6 +5,7 @@
 		<title>NES Map Editor</title>
 		<script type="text/javascript" src="coffee-script.js"></script>
 		<script type="text/coffeescript" src="palette.coffee"></script>
+		<script type="text/coffeescript" src="palette-selector.coffee"></script>
 		<script type="text/coffeescript" src="keybindings.coffee"></script>
 		<script type="text/coffeescript" src="bootstrap.coffee"></script>
 		<script type="text/coffeescript" src="renderer.coffee"></script>
@@ -41,6 +42,28 @@
 					<input type="number" />
 					<input type="number" />
 					<input type="number" />
+				</map-option>
+			</section>
+
+			<section>
+				<h2>Palette</h2>
+				<map-option id="palette-selector">
+					<swatch class="transparent"></swatch>
+					<swatch></swatch>
+					<swatch></swatch>
+					<swatch></swatch>
+					<swatch class="transparent"></swatch>
+					<swatch></swatch>
+					<swatch></swatch>
+					<swatch></swatch>
+					<swatch class="transparent"></swatch>
+					<swatch></swatch>
+					<swatch></swatch>
+					<swatch></swatch>
+					<swatch class="transparent"></swatch>
+					<swatch></swatch>
+					<swatch></swatch>
+					<swatch></swatch>
 				</map-option>
 			</section>
 		</sidebar>
@@ -100,10 +123,14 @@
 			for sel in chrPageSelectors
 				sel.addEventListener 'change', chrPageFn
 
+			paletteSelector = new PaletteSelector document.getElementById 'palette-selector'
+
 			renderer.on 'nesmap', (nesmap) ->
 				mirrorSelector.selectedIndex = nesmap.nametableMirroring
 				for sel, i in chrPageSelectors
 					sel.value = nesmap.chrSwapping[i]
+
+				paletteSelector.setPalette nesmap.palette
 
 			cursor.addEventListener 'mousemove', (e) ->
 				renderer.mouseOverTile e.offsetX, e.offsetY, (if e.shiftKey then 'attribute' else 'tile')
