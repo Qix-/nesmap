@@ -105,7 +105,10 @@
 					sel.value = nesmap.chrSwapping[i]
 
 			cursor.addEventListener 'mousemove', (e) ->
-				renderer.mouseOverTile e.offsetX, e.offsetY, (if e.altKey then 'page' else if e.shiftKey then 'attribute' else 'tile')
+				renderer.mouseOverTile e.offsetX, e.offsetY, (if e.shiftKey then 'attribute' else 'tile')
+
+			cursor.addEventListener 'mousedown', (e) ->
+				renderer.mouseClickTile e.offsetX, e.offsetY, (if e.shiftKey then 'attribute' else 'tile')
 
 			cursor.addEventListener 'mouseout', (e) ->
 				renderer.clearCursor()

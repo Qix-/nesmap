@@ -3,7 +3,7 @@
 
 window.Renderer =
 class Renderer extends EventEmitter
-	constructor: (@canvas, @cursor) ->
+	constructor: (@canvas, @cursor, @paletteContainer) ->
 		@zoom = 2
 		@ctx = @canvas.getContext '2d'
 		@ctxCursor = @cursor.getContext '2d'
@@ -137,7 +137,6 @@ class Renderer extends EventEmitter
 					cw = (x + 1) * @zoom * 32 * 8 - 1
 					ch = (y + 1) * @zoom * 30 * 8 - 1
 
-
 					@ctx.clearRect cx, cy, cw, ch
 					@ctxCursor.clearRect cx, cy, cw, ch
 
@@ -154,6 +153,7 @@ class Renderer extends EventEmitter
 		pageX = Math.floor absTileX / 32
 		pageY = Math.floor absTileY / 30
 		page = pageY * 2 + pageX
+
 
 		tileX = absTileX % 32
 		tileY = absTileY % 30
@@ -185,7 +185,14 @@ class Renderer extends EventEmitter
 				absAttrX = coords.pageX * 16 + coords.attributeX
 				absAttrY = coords.pageY * 15 + coords.attributeY
 				@ctxCursor.fillRect absAttrX * 16 * @zoom, absAttrY * 16 * @zoom, 16 * @zoom, 16 * @zoom
-			when 'page'
-				@ctxCursor.fillRect coords.pageX * 32 * 8 * @zoom, coords.pageY * 30 * 8 * @zoom, 32 * 8 * @zoom, 30 * 8 * @zoom
 
 		@clearMirroredPages()
+
+	mouseClickTile: (x, y, select = 'tile') ->
+		coords = @translateMouseCoords x, y
+
+		switch select
+			when 'tile'
+				console.error 'not implemented yet'
+			when 'attribute'
+				console.error 'not implemented yet'
