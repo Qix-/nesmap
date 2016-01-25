@@ -27,9 +27,8 @@ class Renderer extends EventEmitter
 	send: (name, args...) ->
 		ipcRenderer.send.apply ipcRenderer, ["#{name}--#{@id}"].concat args
 
-	setNametableMirroring: (mirroring) ->
-		@nesmap.nametableMirroring = mirroring
-		@redraw()
+	setNametableMirroring: (mirroring) -> @send 'mirroring', mirroring
+	setChrPages: (values) -> @send 'chr-pages', values
 
 	redraw: ->
 		return if not @canRedraw()
@@ -58,7 +57,6 @@ class Renderer extends EventEmitter
 	getPageUnits: ->
 		pageLayout = @getNametableLayout()
 		(pageLayout[i] = (if v is -1 then 0 else 1)) for v, i in pageLayout
-		console.debug pageLayout
 
 		width = (pageLayout[0] || pageLayout[2]) + (pageLayout[1] || pageLayout[3])
 		height = (pageLayout[0] || pageLayout[1]) + (pageLayout[2] || pageLayout[3])

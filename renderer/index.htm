@@ -62,11 +62,24 @@
 					option.innerHTML = v.name
 					mirrorSelector.appendChild option
 
-			renderer.on 'nesmap', (nesmap) ->
-				mirrorSelector.selectedIndex = nesmap.nametableMirroring
-
 			mirrorSelector.addEventListener 'change', (e) ->
 				renderer.setNametableMirroring this.selectedIndex
+
+			chrPageSelectors = [].slice.call document.querySelectorAll '#chr-page-selector input'
+
+			chrPageFn = ->
+				values = []
+				for sel in chrPageSelectors
+					values.push parseInt sel.value, 10
+				renderer.setChrPages values
+
+			for sel in chrPageSelectors
+				sel.addEventListener 'change', chrPageFn
+
+			renderer.on 'nesmap', (nesmap) ->
+				mirrorSelector.selectedIndex = nesmap.nametableMirroring
+				for sel, i in chrPageSelectors
+					sel.value = nesmap.chrSwapping[i]
 		</script>
 	</body>
 </html>

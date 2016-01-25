@@ -36,6 +36,14 @@ class MapRenderer extends EventEmitter
 			console.log 'saving...'
 			@editor.saveNesmap => console.log "saved to #{@editor.uri}"
 
+		@onIPC 'mirroring', (e, mirroring) =>
+			@editor.nametableMirroring = mirroring
+			@redraw()
+
+		@onIPC 'chr-pages', (e, pages) =>
+			@editor.chrSwapping = pages
+			@redraw()
+
 		@window.loadURL "file://#{__dirname}/renderer/index.htm"
 		@focus()
 
