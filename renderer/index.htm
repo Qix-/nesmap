@@ -145,6 +145,11 @@
 
 			cursor.addEventListener 'mouseout', (e) ->
 				renderer.clearCursor()
+
+			Keys.on 'shift-!', -> renderer.setSelectedAttribute 0
+			Keys.on 'shift-@', -> renderer.setSelectedAttribute 1
+			Keys.on 'shift-#', -> renderer.setSelectedAttribute 2
+			Keys.on 'shift-$', -> renderer.setSelectedAttribute 3
 		</script>
 	</body>
 </html>

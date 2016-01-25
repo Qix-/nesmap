@@ -49,3 +49,34 @@ class MapEditor extends EventEmitter
 		}
 
 		fs.writeFile @uri, obj, cb
+
+	setAttribute: (page, x, y, val) ->
+		clusterX = Math.floor x / 2
+		clusterY = Math.floor y / 2
+		cluster = clusterY * 8 + clusterX
+
+		subAttrX = x % 2
+		subAttrY = y % 2
+		subAttr = subAttrY * 2 + subAttrX
+
+		current = @attributes[page][cluster]
+
+		val &= 3
+		val <<= 2 * subAttr # XXX we might need to flip the bits if this doesn't end up being correct.
+
+		# oh god I love bitwise logic :D
+		# the below replaces the new value bits with the existing attribute
+		# bits:
+		#
+		# 1. (above) shift the new bits to their target position (refer to NES docs)
+		# 2. shift 11b to the position of the new bits
+		# 3. XOR with 0xFF, which effectively NOT's the bits ensuring any bits
+		#    to the left are also 1
+		# 4. AND that value with the current value, setting the target bit locations
+		#    to 0
+		# 5. OR the new value in
+		#
+		# Tadaa!
+		newAttr = ((0xFF ^ (3 << (2 * subAttr))) & current) | val
+
+		@attributes[page][cluster] = newAttr

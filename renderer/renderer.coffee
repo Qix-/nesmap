@@ -5,6 +5,7 @@ window.Renderer =
 class Renderer extends EventEmitter
 	constructor: (@canvas, @cursor, @paletteContainer) ->
 		@zoom = 2
+		@selectedAttribute = -1
 		@ctx = @canvas.getContext '2d'
 		@ctxCursor = @cursor.getContext '2d'
 
@@ -41,6 +42,7 @@ class Renderer extends EventEmitter
 		@clear()
 		@drawGuides()
 		@clearMirroredPages()
+		@redrawTiles()
 
 	clear: ->
 		@ctx.clearRect 0, 0, @canvas.width, @canvas.height
@@ -141,6 +143,7 @@ class Renderer extends EventEmitter
 					@ctxCursor.clearRect cx, cy, cw, ch
 
 	clearCursor: ->
+		@selectedAttribute = null
 		@ctxCursor.clearRect 0, 0, @cursor.width, @cursor.height
 
 	translateMouseCoords: (x, y) ->
@@ -152,8 +155,7 @@ class Renderer extends EventEmitter
 
 		pageX = Math.floor absTileX / 32
 		pageY = Math.floor absTileY / 30
-		page = pageY * 2 + pageX
-
+		page = @getMirroring().mirror[pageY * 2 + pageX]
 
 		tileX = absTileX % 32
 		tileY = absTileY % 30
@@ -185,16 +187,57 @@ class Renderer extends EventEmitter
 				absAttrX = coords.pageX * 16 + coords.attributeX
 				absAttrY = coords.pageY * 15 + coords.attributeY
 				@ctxCursor.fillRect absAttrX * 16 * @zoom, absAttrY * 16 * @zoom, 16 * @zoom, 16 * @zoom
+				@selectedAttribute = coords
 
 		@clearMirroredPages()
 
 	mouseClickTile: (x, y, select = 'tile') ->
+		return if select isnt 'tile' # derp, don't judge me.
 		coords = @translateMouseCoords x, y
 
-		switch select
-			when 'tile'
-				console.error 'not implemented yet'
-			when 'attribute'
-				console.error 'not implemented yet'
-
 	setPalette: (palette) -> @send 'palette', palette
+
+	setSelectedAttribute: (val) ->
+		return if not @selectedAttribute
+		@send 'attribute', @selectedAttribute.page, @selectedAttribute.attributeX, @selectedAttribute.attributeY, val
+
+		clusterX = Math.floor @selectedAttribute.attributeX / 2
+		clusterY = Math.floor @selectedAttribute.attributeY / 2
+		cluster = clusterY * 8 + clusterX
+
+		subAttrX = @selectedAttribute.attributeX % 2
+		subAttrY = @selectedAttribute.attributeY % 2
+		subAttr = subAttrY * 2 + subAttrX
+
+		current = @nesmap.attributes[@selectedAttribute.page][cluster]
+
+		val &= 3
+		val <<= 2 * subAttr # XXX we might need to flip the bits if this doesn't end up being correct.
+
+		# oh god I love bitwise logic :D
+		# the below replaces the new value bits with the existing attribute
+		# bits:
+		#
+		# 1. (above) shift the new bits to their target position (refer to NES docs)
+		# 2. shift 11b to the position of the new bits
+		# 3. XOR with 0xFF, which effectively NOT's the bits ensuring any bits
+		#    to the left are also 1
+		# 4. AND that value with the current value, setting the target bit locations
+		#    to 0
+		# 5. OR the new value in
+		#
+		# Tadaa!
+		newAttr = ((0xFF ^ (3 << (2 * subAttr))) & current) | val
+
+		@nesmap.attributes[@selectedAttribute.page][cluster] = newAttr
+		@redrawTiles()
+
+	redrawTiles: ->
+		@clearTiles()
+		@drawTiles()
+
+	clearTiles: ->
+		# TODO
+
+	drawTiles: ->
+		# TODO

@@ -48,6 +48,14 @@ class MapRenderer extends EventEmitter
 			@editor.palette = palette
 			@redraw()
 
+		@onIPC 'attribute', (e, page, x, y, value) =>
+			# not going to redraw here because it's pointless
+			# and will case a TON of overhead in the renderer.
+			#
+			# I never said this map editor was written correctly or cleanly.
+			# I just need it done.
+			@editor.setAttribute page, x, y, value
+
 		@window.loadURL "file://#{__dirname}/renderer/index.htm"
 		@focus()
 
