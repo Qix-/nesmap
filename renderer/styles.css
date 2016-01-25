@@ -97,14 +97,43 @@ swatch {
 	width: 13px;
 	height: 13px;
 	display: inline-block;
+	cursor: pointer;
 }
 
-swatch:nth-child(4n) {
+map-option > swatch:nth-child(4n) {
 	margin-right: 3px;
+}
+
+map-option > swatch:nth-child(4n+1) {
+	cursor: not-allowed;
+}
+
+selector {
+	margin-top: 15px;
+}
+
+selector > swatch {
+	width: 15px;
+	height: 15px;
+	margin: 1px;
+}
+
+selector > swatch.removed {
+	cursor: not-allowed;
 }
 
 swatch.transparent {
 	background: transparent;
 	box-sizing: border-box;
 	border: 1px solid #888;
+}
+
+map-option > swatch.selected {
+	height: 18px;
+	position: relative;
+	top: 5px;
+}
+
+selector > swatch.selected {
+	height: 20px;
 }
