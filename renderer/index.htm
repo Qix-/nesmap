@@ -52,6 +52,21 @@
 			zoomer.value = renderer.zoom
 			zoomer.addEventListener 'input', (e) ->
 				renderer.setZoom this.value
+
+			mirrorSelector = document.getElementById 'mirroring'
+			renderer.on 'mirrors', (mirrors) ->
+				mirrorSelector.innerHTML = ''
+				for v, i in mirrors
+					option = document.createElement 'option'
+					option.value = i
+					option.innerHTML = v.name
+					mirrorSelector.appendChild option
+
+			renderer.on 'nesmap', (nesmap) ->
+				mirrorSelector.selectedIndex = nesmap.nametableMirroring
+
+			mirrorSelector.addEventListener 'change', (e) ->
+				renderer.setNametableMirroring this.selectedIndex
 		</script>
 	</body>
 </html>

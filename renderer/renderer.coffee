@@ -12,7 +12,11 @@ class Renderer extends EventEmitter
 			@send = (name, args...) =>
 				ipcRenderer.send.apply ipcRenderer, ["#{name}--#{@id}"].concat args
 			ipcRenderer.on 'mirrors', (e, @mirrors) =>
-			ipcRenderer.on 'nesmap', (e, @nesmap) => @redraw()
+				@emit 'mirrors', @mirrors
+				@redraw()
+			ipcRenderer.on 'nesmap', (e, @nesmap) =>
+				@emit 'nesmap', @nesmap
+				@redraw()
 			ipcRenderer.on 'chr-map', (e, @chrMap) => @redraw()
 			ipcRenderer.on 'chr-data', (e, @chrData) => @redraw()
 
@@ -22,6 +26,10 @@ class Renderer extends EventEmitter
 
 	send: (name, args...) ->
 		ipcRenderer.send.apply ipcRenderer, ["#{name}--#{@id}"].concat args
+
+	setNametableMirroring: (mirroring) ->
+		@nesmap.nametableMirroring = mirroring
+		@redraw()
 
 	redraw: ->
 		return if not @canRedraw()
