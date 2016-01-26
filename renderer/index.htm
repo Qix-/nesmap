@@ -14,6 +14,7 @@
 	</head>
 	<body>
 		<canvas-container>
+			<canvas id="tiles"></canvas>
 			<canvas id="map"></canvas>
 			<canvas id="cursor"></canvas>
 		</canvas-container>
@@ -74,7 +75,7 @@
 		<script type="text/coffeescript">
 			Keys.attach()
 
-			window.renderer = new Renderer (document.querySelector 'canvas#map'), (cursor = document.querySelector 'canvas#cursor')
+			window.renderer = new Renderer (document.querySelector 'canvas#tiles'), (document.querySelector 'canvas#map'), (cursor = document.querySelector 'canvas#cursor')
 
 			zoomer = document.getElementById 'zoom'
 			zoomer.value = renderer.zoom

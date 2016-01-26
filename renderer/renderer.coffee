@@ -3,11 +3,12 @@
 
 window.Renderer =
 class Renderer extends EventEmitter
-	constructor: (@canvas, @cursor) ->
+	constructor: (@tiles, @canvas, @cursor) ->
 		@zoom = 2
 		@selectedAttribute = -1
 		@ctx = @canvas.getContext '2d'
 		@ctxCursor = @cursor.getContext '2d'
+		@ctxTiles = @tiles.getContext '2d'
 
 		@setSelectedTile 0
 
@@ -55,8 +56,6 @@ class Renderer extends EventEmitter
 
 	clear: ->
 		@ctx.clearRect 0, 0, @canvas.width, @canvas.height
-		@ctx.fillStyle = '#111'
-		@ctx.fillRect 0, 0, @canvas.width, @canvas.height
 
 	refreshDimensions: ->
 		pageUnits = @getPageUnits()
@@ -64,9 +63,14 @@ class Renderer extends EventEmitter
 		width = pageUnits[0] * @zoom * 32 * 8
 		height = pageUnits[1] * @zoom * 30 * 8
 
-		@cursor.style.width = @canvas.style.width = "#{@cursor.width = @canvas.width = width}px"
+		for c in [@canvas, @cursor]
+			c.style.width = "#{c.width = width}px"
+			c.style.height = "#{c.height = height}px"
 
-		@cursor.style.height = @canvas.style.height = "#{@cursor.height = @canvas.height = height}px"
+		@tiles.style.width = "#{width}px"
+		@tiles.style.height = "#{height}px"
+		@tiles.width = pageUnits[0] * 32 * 8
+		@tiles.height = pageUnits[1] * 30 * 8
 
 	getPageUnits: ->
 		pageLayout = @getNametableLayout()
@@ -213,8 +217,8 @@ class Renderer extends EventEmitter
 		return if not @selectedAttribute
 		@send 'attribute', @selectedAttribute.page, @selectedAttribute.attributeX, @selectedAttribute.attributeY, val
 
-		clusterX = Math.floor @selectedAttribute.attributeX / 2
-		clusterY = Math.floor @selectedAttribute.attributeY / 2
+		clusterX = Math.floor @selectedAttribute.tileX / 4
+		clusterY = Math.floor @selectedAttribute.tileY / 4
 		cluster = clusterY * 8 + clusterX
 
 		subAttrX = @selectedAttribute.attributeX % 2
@@ -249,9 +253,63 @@ class Renderer extends EventEmitter
 		@drawTiles()
 
 	clearTiles: ->
-		# TODO
+		@ctxTiles.clearRect 0, 0, @tiles.width, @tiles.height
 
 	drawTiles: ->
-		# TODO
+		layout = @getNametableLayout()
+		mirroring = @getMirroring().mirror
+
+		for pageX in [0...2]
+			for pageY in [0...2]
+				page = pageY * 2 + pageX
+
+				position = layout[page]
+				continue if position is -1
+
+				img = @ctxTiles.createImageData 32 * 8, 30 * 8
+				table = @nesmap.nametables[page]
+
+				for tileY in [0...30]
+					for tileX in [0...32]
+						@drawTile img.data, mirroring[page], tileX, tileY
+
+				@ctxTiles.putImageData img, pageX * 32 * 8, pageY * 30 * 8
+
+	drawTile: (data, page, tileX, tileY) ->
+		attrClusterX = Math.floor tileX / 4
+		attrClusterY = Math.floor tileY / 4
+
+		attrX = (Math.floor tileX / 2) % 2
+		attrY = (Math.floor tileY / 2) % 2
+
+		attrCluster = attrClusterY * 8 + attrClusterX
+		attr = attrY * 2 + attrX
+
+		tile = @nesmap.nametables[page][tileY * 32 + tileX]
+
+		offset = (@nesmap.chrSwapping[Math.floor tile / 64] * 1024) + ((tile % 64) * 16)
+
+		for py in [0...8]
+			attrByte = @nesmap.attributes[page][attrCluster]
+			attrBits = attrByte >> (attr * 2) & 3
+
+			byte1 = @chrData[offset + py]
+			byte2 = @chrData[offset + py + 8]
+
+			for px in [0...8]
+				b1 = byte1 >> (7 - px) & 1
+				b2 = byte2 >> (7 - px) & 1
+				b = (b2 << 1) | b1
+				b |= attrBits << 2
+
+				colorByte = @nesmap.palette[b]
+				continue if colorByte is 0
+
+				colorOffset = (tileY * 8 + py) * 1024 + (tileX * 8 + px) * 4
+
+				color = nesPalette[colorByte]
+				for i in [0...3]
+					data[colorOffset + i] = color[i]
+				data[colorOffset + 3] = 255
 
 	setSelectedTile: (@selectedTile) ->
