@@ -130,6 +130,21 @@ class Renderer extends EventEmitter
 		@ctx.setLineDash []
 		@ctx.stroke()
 
+		# center guides
+		@ctx.beginPath()
+		@ctx.moveTo @zoom * 16 * 8 + 0.5, 0
+		@ctx.lineTo @zoom * 16 * 8 + 0.5, @canvas.height
+		@ctx.moveTo @zoom * 48 * 8 + 0.5, 0
+		@ctx.lineTo @zoom * 48 * 8 + 0.5, @canvas.height
+		@ctx.moveTo 0, @zoom * 15 * 8 + 0.5
+		@ctx.lineTo @canvas.width, @zoom * 15 * 8 + 0.5
+		@ctx.moveTo 0, @zoom * 45 * 8 + 0.5
+		@ctx.lineTo @canvas.width, @zoom * 45 * 8 + 0.5
+		@ctx.strokeStyle = '#F90'
+		@ctx.lineWidth = 1
+		@ctx.setLineDash [3, 9]
+		@ctx.stroke()
+
 		# NTSC guide
 		@ctx.beginPath()
 		@ctx.moveTo 0, @zoom * 16 + 0.5
