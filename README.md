@@ -1,5 +1,7 @@
 # NESMAP Editor
 
+![Screenshot](screenshot.png)
+
 > NOTE: This project is written like crap. I just needed it done for a game I'm designing.
 
 This is a "universal" editor for NES tile maps (nametables).
