@@ -6,6 +6,7 @@
 		<script type="text/javascript" src="coffee-script.js"></script>
 		<script type="text/coffeescript" src="palette.coffee"></script>
 		<script type="text/coffeescript" src="palette-selector.coffee"></script>
+		<script type="text/coffeescript" src="chr-selector.coffee"></script>
 		<script type="text/coffeescript" src="keybindings.coffee"></script>
 		<script type="text/coffeescript" src="bootstrap.coffee"></script>
 		<script type="text/coffeescript" src="renderer.coffee"></script>
@@ -132,6 +133,10 @@
 					sel.value = nesmap.chrSwapping[i]
 
 				paletteSelector.setPalette nesmap.palette
+
+			chrSelector = new ChrSelector document.querySelector 'tile-picker'
+			renderer.on 'chr-data', (chrData, nesmap) ->
+				chrSelector.update chrData, nesmap
 
 			cursor.addEventListener 'mousemove', (e) ->
 				renderer.mouseOverTile e.offsetX, e.offsetY, (if e.shiftKey then 'attribute' else 'tile')

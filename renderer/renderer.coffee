@@ -3,7 +3,7 @@
 
 window.Renderer =
 class Renderer extends EventEmitter
-	constructor: (@canvas, @cursor, @paletteContainer) ->
+	constructor: (@canvas, @cursor) ->
 		@zoom = 2
 		@selectedAttribute = -1
 		@ctx = @canvas.getContext '2d'
@@ -18,13 +18,20 @@ class Renderer extends EventEmitter
 				@redraw()
 			ipcRenderer.on 'nesmap', (e, @nesmap) =>
 				@emit 'nesmap', @nesmap
+				@emitChrData()
 				@redraw()
 			ipcRenderer.on 'chr-map', (e, @chrMap) => @redraw()
-			ipcRenderer.on 'chr-data', (e, @chrData) => @redraw()
+			ipcRenderer.on 'chr-data', (e, @chrData) =>
+				@emitChrData()
+				@redraw()
 
 			Keys.on 'cmd-s', =>
 				console.debug 'saving'
 				@send 'save'
+
+	emitChrData: ->
+		if @chrData? and @nesmap?
+			@emit 'chr-data', @chrData, @nesmap
 
 	send: (name, args...) ->
 		ipcRenderer.send.apply ipcRenderer, ["#{name}--#{@id}"].concat args
@@ -241,3 +248,6 @@ class Renderer extends EventEmitter
 
 	drawTiles: ->
 		# TODO
+
+	refreshChrPicker: ->
+
