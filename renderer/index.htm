@@ -17,7 +17,7 @@
 			<canvas id="cursor"></canvas>
 		</canvas-container>
 		<zoom-slider>
-			<input id="zoom" type="range" min="1" max="10" step="0.1" />
+			<input id="zoom" type="range" min="1" max="10" step="1" />
 		</zoom-slider>
 		<sidebar>
 			<section>
@@ -90,15 +90,11 @@
 			document.addEventListener 'mousewheel', (e) ->
 				return if not e.ctrlKey
 
-				args = []
-				for k, v of e when k.match /^delta/
-					args.push k, v
-
 				delta = e.deltaY / -50
 				val += delta
 				val = Math.min zoomMax, Math.max zoomMin, val
-				zoomer.value = val
-				renderer.setZoom val
+				zoomer.value = Math.round val
+				renderer.setZoom Math.round val
 				e.preventDefault()
 				return false
 
