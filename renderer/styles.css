@@ -144,3 +144,8 @@ canvas.chr-icon {
 	margin: 0 1px -3px 0;
 	padding: 0;
 }
+
+canvas.chr-icon.selected {
+	border: 2px solid #F00;
+	box-sizing: border-box;
+}

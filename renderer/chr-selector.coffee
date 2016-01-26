@@ -40,12 +40,21 @@ class ChrIcon extends EventEmitter
 window.ChrSelector = class ChrSelector extends EventEmitter
 	constructor: (@container) ->
 		@icons = []
-		for [0...256]
+		[0...256].forEach (i) =>
 			icon = new ChrIcon()
 			@icons.push icon
 			@container.appendChild icon.dom
 
-			# TODO on click
+			icon.on 'click', => @selectIcon i
+
+	clearSelectedIcon: ->
+		for icon in @icons
+			icon.dom.classList.remove 'selected'
+
+	selectIcon: (i) ->
+		@clearSelectedIcon()
+		@icons[i].dom.classList.add 'selected'
+		@emit 'selected', i
 
 	update: (chrData, nesmap) ->
 		tileIndex = 0
