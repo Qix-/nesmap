@@ -138,6 +138,9 @@
 			renderer.on 'chr-data', (chrData, nesmap) ->
 				chrSelector.update chrData, nesmap
 
+			chrSelector.on 'selected', (icon) ->
+				renderer.setSelectedTile icon
+
 			cursor.addEventListener 'mousemove', (e) ->
 				renderer.mouseOverTile e.offsetX, e.offsetY, (if e.shiftKey then 'attribute' else 'tile')
 

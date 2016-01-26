@@ -56,6 +56,10 @@ class MapRenderer extends EventEmitter
 			# I just need it done.
 			@editor.setAttribute page, x, y, value
 
+		@onIPC 'tile', (e, page, offset, tile) =>
+			# same thing as 'attribute' - not sending a redraw.
+			@editor.nametables[page][offset] = tile
+
 		@window.loadURL "file://#{__dirname}/renderer/index.htm"
 		@focus()
 

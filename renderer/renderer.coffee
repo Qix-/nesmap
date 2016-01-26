@@ -9,6 +9,8 @@ class Renderer extends EventEmitter
 		@ctx = @canvas.getContext '2d'
 		@ctxCursor = @cursor.getContext '2d'
 
+		@setSelectedTile 0
+
 		ipcRenderer.once 'id', (e, nid) =>
 			@id = nid
 			@send = (name, args...) =>
@@ -201,6 +203,9 @@ class Renderer extends EventEmitter
 	mouseClickTile: (x, y, select = 'tile') ->
 		return if select isnt 'tile' # derp, don't judge me.
 		coords = @translateMouseCoords x, y
+		@send 'tile', coords.page, coords.tile, @selectedTile
+		@nesmap.nametables[coords.page][coords.tile] = @selectedTile
+		@redrawTiles()
 
 	setPalette: (palette) -> @send 'palette', palette
 
@@ -249,5 +254,4 @@ class Renderer extends EventEmitter
 	drawTiles: ->
 		# TODO
 
-	refreshChrPicker: ->
-
+	setSelectedTile: (@selectedTile) ->
